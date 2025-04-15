@@ -1,0 +1,207 @@
+---
+title: DSAN 5500 Final Project Job Position ETL Pipeline
+subtitle: A DSAN 5500
+author: Jen Guo and Wendy Hu
+date: last-modified
+date-format: long
+format:
+  html:
+    toc: true
+    code-copy: true
+    code-overflow: wrap
+    mainfont: Atkinson Hyperlegible
+    code-annotations: hover
+    code-fold: true
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  freeze: auto 
+jupyter: python3
+---
+
+# Set Up API Key
+
+```{python}
+#load needed packages
+import json
+import os
+import requests
+
+#retrieve API key from stored json file
+try:
+    with open('Jen_api.json') as f:
+        keys = json.load(f)
+    
+        #store API key and app_id
+        APP_ID = keys['app_id']
+        API_KEY = keys['api_key']
+        
+#handle errors if json file not found and if api key is not valid
+except FileNotFoundError:
+    print("The file storing api key was not found.")
+except KeyError as e:
+    print(f"Missing key in json file: {e}")
+except json.JSONDecodeError:
+    print("Error reading json file.")
+```
+
+# Test 1 extract, transform, and print out job postions
+
+```{python}
+# Define your search parameters
+# params = {
+#     'app_id': APP_ID,
+#     'app_key': API_KEY,
+#     'what': 'data scientist',          # Job title or keywords
+#     'where': 'Washington, DC',         # Location
+#     'results_per_page': 2,             # Number of results per page
+#     # 'sort_by': 'date'                  # Sort by most recent
+# }
+```
+
+```{python}
+#define url site on Adzuna to scrape job position posts
+# url = 'https://api.adzuna.com/v1/api/jobs/us/search/1'
+
+```
+
+```{python}
+# Make the request
+# response = requests.get(url, params=params)
+
+```
+
+```{python}
+# Check response
+# if response.status_code == 200:
+#     data = response.json()
+#     for job in data.get('results', []):
+#         print('🧾 Job Title:', job.get('title'))
+#         print('🏢 Company:', job.get('company', {}).get('display_name'))
+#         print('📍 Location:', job.get('location', {}).get('display_name'))
+#         print('📝 Description:', job.get('description')[:150], '...')
+#         print('🔗 URL:', job.get('redirect_url'))
+#         print('-' * 80)
+# else:
+#     print('Failed to retrieve jobs:', response.status_code)
+#     print(response.text)
+```
+
+# Test 2 with BaseModel class ETL
+
+# Extract Step
+
+```{python}
+#install needed packages
+from pprint import pprint
+from typing import List, Optional, Union
+
+#from bs4 import BeautifulSoup
+from pydantic import BaseModel, field_validator, HttpUrl, ValidationError
+
+#define GetJobs class
+class GetJobs(BaseModel):
+  #intialize variables in GetJobs class
+  title: str
+  company: str
+  location: str
+  salary: Optional[Union[int, float, str]] = "Not specified"
+  description: str
+  about_url: HttpUrl
+
+  #validator to clean the extracted salary to replace "$" and "," symbols to convert to integer
+  @field_validator('salary')
+  @classmethod
+  def clean_salary(cls, value):
+      #if the extracted salary is integer or float value then return the salary value
+      if isinstance(value,(int, float)):
+          return value
+      #if the extracted salary is string type then remove the "$" and the "," symbols
+      if isinstance(value, str):
+          cleaned_sal = value.replace("$", "").replace(",", "").strip()
+          #handle errors for string type extracted salary
+          try:
+              return int(float(cleaned_sal))
+          except ValueError:
+              return "Not specified"
+          return "Not specified"
+ 
+      
+  #validator for extracted location to replace "," symbol
+  @field_validator('location')
+  @classmethod
+  def clean_location(cls, value: str):
+    return value.replace("“","").replace("”","")
+
+
+#define API request parameters
+params = {
+    'app_id': APP_ID,                  # app ID
+    'app_key': API_KEY,                # API key
+    'what': 'data scientist',          # Job title or keywords
+    'where': 'Washington, DC',         # Location
+    'results_per_page': 1,             # Number of results per page
+    'sort_by': 'date'                  # Sort by most recent
+}
+
+#create extract_jobs function to extract job posts
+def extract_jobs(job_url: HttpUrl) -> List[GetJobs]:
+  response = requests.get(job_url, params=params) #request from the Adzuna job post page using the request library
+  #print error message if could not fetch job posts from page
+  if response.status_code != 200:
+      raise Exception(f"Failed to fetch jobs: {response.status_code}")
+
+  #get job posts in json format
+  jobs_data = response.json()
+  #initialize empty list to store extracted job posts
+  extracted_jobs = []
+
+  #for each of the extracted job posts
+  for job in jobs_data.get("results", []):
+      try:
+          job_post = GetJobs( #call GetJobs class
+              title = job.get("title", "No title"), #extract the job title of the job position post
+              company = job.get("company", {}).get("display_name", "Unknown"), #extract the company name of the job position post
+              location = job.get("location", {}).get("display_name", "Unknown"), #extract the job location of the job position post
+              salary = job.get("salary", "Not specified"), #extract the job salary information of the job position post
+              description = job.get("description", "")[:150], #extract the job description of the job post
+              about_url = job.get("redirect_url")) #extract the url page of job post
+          
+          extracted_jobs.append(job_post) #add extracted job to list
+      except ValidationError as e: #raise error if job wasn't able to get extracted
+          print(f"Validation error: {e}")
+          
+  return extracted_jobs #return extracted job posts with the requested parameters
+          
+          
+  # soup = BeautifulSoup(response.text, 'html.parser') #use BeautifulSoup to extract information from the Adzuna job post page
+  # job_title = soup.find('title', class_='title').text #extract the job title of the job position post
+  # company_name = soup.find('company', class_ = 'company').text #extract the company name of the job position post           
+  # job_location = soup.find('location', class_ = 'location') #extract the job location of the job position post
+  # job_salary = soup.find('salary', class_ = 'salary') #extract the job salary information of the job position post
+  # job_description = soup.find(('description')[:150], '...', class_ = 'description') #extract the job description of the job post
+    
+  # if job_title: #check if job title in post found then
+  #   relative_about_url = job_title['href'] #extract the url of the job post
+  #   about_url = job_url.rstrip('/') + '/' + relative_about_url.lstrip('/') #create absolute URL using base URL
+  # else: #if job title not found then do the following
+  #   about_url = job_url #set about_url to job_url
+  #create job object to contain extracted data on job postings
+  # job_obj = GetJobs(title = job_title, company = company_name, location = job_location, salary = job_salary, description = job_description, about_url = about_url)
+  # return job_obj #return the job object
+
+#create function to define url to extract job posts
+def scrape_job(
+    job_url: str = "https://api.adzuna.com/v1/api/jobs/us/search/1" #extract job posts from this Adzuna url
+):
+  extracted_jobs = extract_jobs(job_url) #call the extract_jobs function
+  return extracted_jobs #return the extracted job posts for the defined url
+
+scrape_job() #call the scrape_job function
+```
+
+# Transformation Step
+
+# Load Step
