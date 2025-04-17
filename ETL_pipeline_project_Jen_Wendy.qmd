@@ -97,9 +97,10 @@ except json.JSONDecodeError:
 #install needed packages
 from pprint import pprint
 from typing import List, Optional, Union
+import string
 
 #from bs4 import BeautifulSoup
-from pydantic import BaseModel, field_validator, HttpUrl, ValidationError
+from pydantic import BaseModel, field_validator, HttpUrl, ValidationError, FilePath
 
 #define GetJobs class
 class GetJobs(BaseModel):
@@ -107,8 +108,12 @@ class GetJobs(BaseModel):
   title: str
   company: str
   location: str
-  salary: Optional[Union[int, float, str]] = "Not specified"
+  salary: Optional[Union[int, float, str]]
+  hours: str
+  degree: str
   description: str
+  responsibilities: str
+  skills: str
   about_url: HttpUrl
 
   #validator to clean the extracted salary to replace "$" and "," symbols to convert to integer
@@ -165,8 +170,12 @@ def extract_jobs(job_url: HttpUrl) -> List[GetJobs]:
               title = job.get("title", "No title"), #extract the job title of the job position post
               company = job.get("company", {}).get("display_name", "Unknown"), #extract the company name of the job position post
               location = job.get("location", {}).get("display_name", "Unknown"), #extract the job location of the job position post
-              salary = job.get("salary", "Not specified"), #extract the job salary information of the job position post
-              description = job.get("description", "")[:150], #extract the job description of the job post
+              salary = job.get("salary", {}).get("display_name","Not specified"), #extract the job salary information of the job position post
+              hours = job.get("hours", {}).get("display_name", "Unknown"), #extract employment hours from job position post
+              degree = job.get("degree", {}).get("display_name", "Unknown"), #extract the work hours ex. Full-time, part time for the job position post
+              description = job.get("description", "")[:250], #extract the job description of the job post
+              responsibilities = job.get("responsibilities", {}).get("display_name", "Unknown"), #extract the responsibilities
+              skills = job.get("requirements", {}).get("display_name", "Unknown"), #extract the required skills of the job position post
               about_url = job.get("redirect_url")) #extract the url page of job post
           
           extracted_jobs.append(job_post) #add extracted job to list
@@ -183,25 +192,77 @@ def extract_jobs(job_url: HttpUrl) -> List[GetJobs]:
   # job_salary = soup.find('salary', class_ = 'salary') #extract the job salary information of the job position post
   # job_description = soup.find(('description')[:150], '...', class_ = 'description') #extract the job description of the job post
     
-  # if job_title: #check if job title in post found then
-  #   relative_about_url = job_title['href'] #extract the url of the job post
-  #   about_url = job_url.rstrip('/') + '/' + relative_about_url.lstrip('/') #create absolute URL using base URL
-  # else: #if job title not found then do the following
-  #   about_url = job_url #set about_url to job_url
-  #create job object to contain extracted data on job postings
-  # job_obj = GetJobs(title = job_title, company = company_name, location = job_location, salary = job_salary, description = job_description, about_url = about_url)
-  # return job_obj #return the job object
 
+#keep this code but moved down atter transformation step
 #create function to define url to extract job posts
-def scrape_job(
-    job_url: str = "https://api.adzuna.com/v1/api/jobs/us/search/1" #extract job posts from this Adzuna url
-):
-  extracted_jobs = extract_jobs(job_url) #call the extract_jobs function
-  return extracted_jobs #return the extracted job posts for the defined url
+# def scrape_job(
+#     job_url: str = "https://api.adzuna.com/v1/api/jobs/us/search/1" #extract job posts from this Adzuna url
+# ):
+#   extracted_jobs = extract_jobs(job_url) #call the extract_jobs function
+#   return extracted_jobs #return the extracted job posts for the defined url
 
-scrape_job() #call the scrape_job function
+# scrape_job() #call the scrape_job function
 ```
 
 # Transformation Step
 
+```{python}
+#create function to transform extract job info into a friendly email structure
+def transform_extracted_jobs(job_obj: List[GetJobs]) -> str:
+    #if no job post extracted then return error message
+    if not job_obj:
+        return "No job posts found."
+
+    #set text for email body
+    email_body = "Your Daily Job Digest: Data Scientist roles in Washington, DC*\n\n"
+
+    #iterate over extracted job to be displayed in the following format
+    for i, job in enumerate(job_obj, start=1):
+        job_entry = (
+            f"Title {i}: {job.title}**\n"                   #print job title
+            f"Company: {job.company}\n"                     #print company name
+            f"Location: {job.location}\n"                   #print location of company
+            f"Salary: {job.salary}\n"                       #print job salary
+            f"Employment type: {job.hours}\n"               #print job type in terms of full-time. part-time, internship
+            f"Degree requirement: {job.degree}\n"           #print education requirement for job post
+            f"Description summary: {job.description}\n"     #print job description
+            f"Responsibilities: {job.responsibilities}\n"   #print job responsibilites
+            f"Technical skills: {job.skills}\n"             #print required technical skills needed for job postion
+            f"More info url: {job.about_url})\n\n"          #print url of the job post
+        )
+        email_body += job_entry #append the job_entry to email_body
+    return email_body #return the email_body
+    
+        
+```
+
 # Load Step
+
+```{python}
+#create function to load the extracted job posts in email format into a json file as test 
+def load_jobs_to_file(job_str: str, load_filepath: str) -> None:
+    with open(load_filepath, 'a') as file:
+        file.write(job_str + '\n')
+```
+
+```{python}
+#create function to define url to extract job posts
+def scrape_job(
+    job_url: str = "https://api.adzuna.com/v1/api/jobs/us/search/1", #extract job posts from this Adzuna url
+    jobs_filename: str = "extracted_jobs.json"
+):
+  extracted_jobs = extract_jobs(job_url) #call the extract_jobs function
+
+  #add the transformatiom_extracted_jobs function step
+  email_template = transform_extracted_jobs(extracted_jobs)
+  #print out the email_friendly version of extracted jobs in email template
+  print(email_template)
+
+  #file_result = load_jobs_to_file(email_template, jobs_filename)
+  #return(file_result) #return extracted job posts in the json file output
+  load_jobs_to_file(email_template, jobs_filename)
+
+scrape_job() #call the scrape_job function
+```
+
+#
