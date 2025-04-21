@@ -132,6 +132,14 @@ class GetJobs(BaseModel):
           except ValueError:
               return "Not specified"
           return "Not specified"
+          
+  #validator for salary_min so it's always a clean int format
+  @field_validator('salary_min', mode='before')
+  @classmethod
+  def convert_salary_min(cls, value):
+      if isinstance(value, float):
+          return round(value) #return rounded conversion of salary min value
+      return value
  
       
   #validator for extracted location to replace "," symbol
@@ -147,7 +155,6 @@ params = {
     'app_key': API_KEY,                # API key
     'what': 'data scientist',          # Job title or keywords
     'where': 'Washington, DC',         # Location
-    #'page': 1,                         # Page number
     'results_per_page': 1,             # Number of results per page
     'sort_by': 'date',                 # Sort by most recent
     'salary_min': 50000,               # Minimum salary to get results for
@@ -174,7 +181,7 @@ def extract_jobs(job_url: HttpUrl) -> List[GetJobs]:
               company = job.get("company", {}).get("display_name", "Unknown"), #extract the company name of the job position post
               location = job.get("location", {}).get("display_name", "Unknown"), #extract the job location of the job position post
               salary = job.get("salary", "Not specified"), #extract the job salary information of the job position post
-              salary_min = job.get("salary_min", 0), #extract the minimum salary for the job position
+              salary_min = round(job.get("salary_min", 0)), #extract the minimum salary for the job position
               contract_time = job.get("contract_time", "Unknown"), #extract employment hours from job position post
               degree = job.get("degree", "Unknown"), #extract the work hours ex. Full-time, part time for the job position post
               description = job.get("description", "")[:250], #extract the job description of the job post
@@ -214,7 +221,6 @@ def transform_extracted_jobs(job_obj: List[GetJobs]) -> str:
             f"Degree requirement: {job.degree}\n"           #print education requirement for job post
             f"Description summary: {job.description}\n"     #print job description
             f"Responsibilities: {job.responsibilities}\n"   #print job responsibilites
-            #f"Technical skills: {job.skills}\n"             #print required technical skills needed for job postion
             f"More info url: {job.about_url})\n\n"          #print url of the job post
         )
         email_body += job_entry #append the job_entry to email_body
