@@ -235,6 +235,10 @@ def transform_extracted_jobs(job_obj: List[GetJobs]) -> str:
 def load_jobs_to_file(job_str: str, load_filepath: str) -> None:
     with open(load_filepath, 'a') as file:
         file.write(job_str + '\n')
+
+def load_jobs_as_json(job_list: List[GetJobs], filepath: str):
+    with open(filepath, 'w') as f:
+        json.dump([job.model_dump(mode="json") for job in job_list], f, indent=2)
 ```
 
 ```{python}
@@ -254,5 +258,82 @@ def scrape_job(
   #return(file_result) #return extracted job posts in the json file output
   load_jobs_to_file(email_template, jobs_filename)
 
-scrape_job() #call the scrape_job function
+# scrape_job() #call the scrape_job function
+```
+
+```{python}
+def scrape_job(
+    job_url: str = "https://api.adzuna.com/v1/api/jobs/us/search/1", 
+    jobs_filename: str = "extracted_jobs_structured.json"
+):
+    extracted_jobs = extract_jobs(job_url)
+    
+    # Save structured JSON
+    load_jobs_as_json(extracted_jobs, jobs_filename)
+    
+    # Transform for email content
+    email_template = transform_extracted_jobs(extracted_jobs)
+    return email_template  # return text for the email
+
+scrape_job()
+```
+    J
+
+```{python}
+import smtplib
+from email.message import EmailMessage
+
+def send_email_smtp(subject: str, body: str, to_email: str,
+                    from_email: str, app_password: str,
+                    attachment_path: str = None):
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg['Subject'] = subject
+    msg['From'] = from_email
+    msg['To'] = to_email
+
+    # Add attachment if provided
+    if attachment_path:
+        with open(attachment_path, 'rb') as f:
+            file_data = f.read()
+            file_name = os.path.basename(attachment_path)
+        msg.add_attachment(file_data, maintype='application', subtype='json', filename=file_name)
+
+    # Send
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(from_email, app_password)
+            smtp.send_message(msg)
+            print("Email sent successfully!")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+```
+
+
+```{python}
+from dotenv import load_dotenv
+import os
+
+load_dotenv(dotenv_path="./.env")
+
+app_password = os.getenv("GMAIL_APP_PASSWORD")
+# print("App password loaded:", app_password)
+```
+
+
+```{python}
+email_content = scrape_job(
+    job_url="https://api.adzuna.com/v1/api/jobs/us/search/1",
+    jobs_filename="extracted_jobs_structured.json"
+)
+
+send_email_smtp(
+    subject="🧾 Your Daily Data Scientist Job Digest",
+    body=email_content,
+    to_email="liwen881129@gmail.com",
+    from_email="wendy881129@gmail.com",
+    app_password=app_password,
+    attachment_path="extracted_jobs_structured.json"
+)
+
 ```
