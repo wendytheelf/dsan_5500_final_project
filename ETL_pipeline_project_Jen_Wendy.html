@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Jen Guo and Wendy Hu">
-<meta name="dcterms.date" content="2025-04-21">
+<meta name="dcterms.date" content="2025-04-26">
 
 <title>DSAN 5500 Final Project Job Position ETL Pipeline</title>
 <style>
@@ -3087,8 +3087,6 @@ vertical-align: -.125em;
    
   <ul>
   <li><a href="#set-up-api-key" id="toc-set-up-api-key" class="nav-link active" data-scroll-target="#set-up-api-key">Set Up API Key</a></li>
-  <li><a href="#test-1-extract-transform-and-print-out-job-postions" id="toc-test-1-extract-transform-and-print-out-job-postions" class="nav-link" data-scroll-target="#test-1-extract-transform-and-print-out-job-postions">Test 1 extract, transform, and print out job postions</a></li>
-  <li><a href="#test-2-with-basemodel-class-etl" id="toc-test-2-with-basemodel-class-etl" class="nav-link" data-scroll-target="#test-2-with-basemodel-class-etl">Test 2 with BaseModel class ETL</a></li>
   <li><a href="#extract-step" id="toc-extract-step" class="nav-link" data-scroll-target="#extract-step">Extract Step</a></li>
   <li><a href="#transformation-step" id="toc-transformation-step" class="nav-link" data-scroll-target="#transformation-step">Transformation Step</a></li>
   <li><a href="#load-step" id="toc-load-step" class="nav-link" data-scroll-target="#load-step">Load Step</a></li>
@@ -3117,7 +3115,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 21, 2025</p>
+      <p class="date">April 26, 2025</p>
     </div>
   </div>
   
@@ -3131,7 +3129,7 @@ vertical-align: -.125em;
 
 <section id="set-up-api-key" class="level1">
 <h1>Set Up API Key</h1>
-<div id="0224bc50" class="cell" data-execution_count="1">
+<div id="09b22180" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#load needed packages</span></span>
@@ -3139,264 +3137,305 @@ vertical-align: -.125em;
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#retrieve API key from stored json file</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> <span class="bu">open</span>(<span class="st">&#39;Jen_api.json&#39;</span>) <span class="im">as</span> f:</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        keys <span class="op">=</span> json.load(f)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="co">#store API key and app_id</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        APP_ID <span class="op">=</span> keys[<span class="st">&#39;app_id&#39;</span>]</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        API_KEY <span class="op">=</span> keys[<span class="st">&#39;api_key&#39;</span>]</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#handle errors if json file not found and if api key is not valid</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">FileNotFoundError</span>:</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;The file storing api key was not found.&quot;</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">KeyError</span> <span class="im">as</span> e:</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Missing key in json file: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> json.JSONDecodeError:</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Error reading json file.&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Obtain API key and app ID from the Adzuna site to extract job posts</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#retrieve API key from stored json file</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> <span class="bu">open</span>(<span class="st">&#39;Jen_api.json&#39;</span>) <span class="im">as</span> f:</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        keys <span class="op">=</span> json.load(f)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="co">#store API key and app_id</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        APP_ID <span class="op">=</span> keys[<span class="st">&#39;app_id&#39;</span>]</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        API_KEY <span class="op">=</span> keys[<span class="st">&#39;api_key&#39;</span>]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#handle errors if json file not found and if api key is not valid</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">FileNotFoundError</span>:</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;The file storing api key was not found.&quot;</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">KeyError</span> <span class="im">as</span> e:</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Missing key in json file: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> json.JSONDecodeError:</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Error reading json file.&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-</section>
-<section id="test-1-extract-transform-and-print-out-job-postions" class="level1">
-<h1>Test 1 extract, transform, and print out job postions</h1>
-<div id="2a4832a7" class="cell" data-execution_count="2">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define your search parameters</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># params = {</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     &#39;app_id&#39;: APP_ID,</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#     &#39;app_key&#39;: API_KEY,</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#     &#39;what&#39;: &#39;data scientist&#39;,          # Job title or keywords</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     &#39;where&#39;: &#39;Washington, DC&#39;,         # Location</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#     &#39;results_per_page&#39;: 2,             # Number of results per page</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#     # &#39;sort_by&#39;: &#39;date&#39;                  # Sort by most recent</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># }</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div id="1268d79a" class="cell" data-execution_count="3">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#define url site on Adzuna to scrape job position posts</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># url = &#39;https://api.adzuna.com/v1/api/jobs/us/search/1&#39;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div id="af608e3f" class="cell" data-execution_count="4">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make the request</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># response = requests.get(url, params=params)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div id="3eab378f" class="cell" data-execution_count="5">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check response</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># if response.status_code == 200:</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     data = response.json()</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#     for job in data.get(&#39;results&#39;, []):</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#         print(&#39;🧾 Job Title:&#39;, job.get(&#39;title&#39;))</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#         print(&#39;🏢 Company:&#39;, job.get(&#39;company&#39;, {}).get(&#39;display_name&#39;))</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#         print(&#39;📍 Location:&#39;, job.get(&#39;location&#39;, {}).get(&#39;display_name&#39;))</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#         print(&#39;📝 Description:&#39;, job.get(&#39;description&#39;)[:150], &#39;...&#39;)</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#         print(&#39;🔗 URL:&#39;, job.get(&#39;redirect_url&#39;))</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#         print(&#39;-&#39; * 80)</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># else:</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#     print(&#39;Failed to retrieve jobs:&#39;, response.status_code)</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#     print(response.text)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-</section>
-<section id="test-2-with-basemodel-class-etl" class="level1">
-<h1>Test 2 with BaseModel class ETL</h1>
 </section>
 <section id="extract-step" class="level1">
 <h1>Extract Step</h1>
-<div id="91b49ac1" class="cell" data-execution_count="6">
+<div id="d94f2b03" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install needed packages</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pprint <span class="im">import</span> pprint</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> List, Optional, Union</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> string</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#from bs4 import BeautifulSoup</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pydantic <span class="im">import</span> BaseModel, field_validator, HttpUrl, ValidationError, FilePath</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#define GetJobs class</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GetJobs(BaseModel):</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">#intialize variables in GetJobs class types</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  title: <span class="bu">str</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  company: <span class="bu">str</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  location: <span class="bu">str</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  salary: Optional[Union[<span class="bu">int</span>, <span class="bu">float</span>, <span class="bu">str</span>]]</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  salary_min: <span class="bu">int</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  contract_time: <span class="bu">str</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  degree: <span class="bu">str</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  description: <span class="bu">str</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  responsibilities: <span class="bu">str</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  about_url: HttpUrl</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="co">#validator to clean the extracted salary to replace &quot;$&quot; and &quot;,&quot; symbols to convert to integer</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">@field_validator</span>(<span class="st">&#39;salary&#39;</span>)</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">@classmethod</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> clean_salary(cls, value):</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>      <span class="co">#if the extracted salary is integer or float value then return the salary value</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="bu">isinstance</span>(value,(<span class="bu">int</span>, <span class="bu">float</span>)):</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>          <span class="cf">return</span> value</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>      <span class="co">#if the extracted salary is string type then remove the &quot;$&quot; and the &quot;,&quot; symbols</span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="bu">isinstance</span>(value, <span class="bu">str</span>):</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>          cleaned_sal <span class="op">=</span> value.replace(<span class="st">&quot;$&quot;</span>, <span class="st">&quot;&quot;</span>).replace(<span class="st">&quot;,&quot;</span>, <span class="st">&quot;&quot;</span>).strip()</span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>          <span class="co">#handle errors for string type extracted salary</span></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>          <span class="cf">try</span>:</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>              <span class="cf">return</span> <span class="bu">int</span>(<span class="bu">float</span>(cleaned_sal))</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>          <span class="cf">except</span> <span class="pp">ValueError</span>:</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>              <span class="cf">return</span> <span class="st">&quot;Not specified&quot;</span></span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>          <span class="cf">return</span> <span class="st">&quot;Not specified&quot;</span></span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>          </span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  <span class="co">#validator for salary_min so it&#39;s always a clean int format</span></span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">@field_validator</span>(<span class="st">&#39;salary_min&#39;</span>, mode<span class="op">=</span><span class="st">&#39;before&#39;</span>)</span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">@classmethod</span></span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> convert_salary_min(cls, value):</span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="bu">isinstance</span>(value, <span class="bu">float</span>):</span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>          <span class="cf">return</span> <span class="bu">round</span>(value) <span class="co">#return rounded conversion of salary min value</span></span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> value</span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>  <span class="co">#validator for extracted location to replace &quot;,&quot; symbol</span></span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  <span class="at">@field_validator</span>(<span class="st">&#39;location&#39;</span>)</span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">@classmethod</span></span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> clean_location(cls, value: <span class="bu">str</span>):</span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> value.replace(<span class="st">&quot;“&quot;</span>,<span class="st">&quot;&quot;</span>).replace(<span class="st">&quot;”&quot;</span>,<span class="st">&quot;&quot;</span>)</span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="co">#define API request parameters</span></span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> {</span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;app_id&#39;</span>: APP_ID,                  <span class="co"># app ID</span></span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;app_key&#39;</span>: API_KEY,                <span class="co"># API key</span></span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;what&#39;</span>: <span class="st">&#39;data scientist&#39;</span>,          <span class="co"># Job title or keywords</span></span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;where&#39;</span>: <span class="st">&#39;Washington, DC&#39;</span>,         <span class="co"># Location</span></span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;results_per_page&#39;</span>: <span class="dv">1</span>,             <span class="co"># Number of results per page</span></span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;sort_by&#39;</span>: <span class="st">&#39;date&#39;</span>,                 <span class="co"># Sort by most recent</span></span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;salary_min&#39;</span>: <span class="dv">50000</span>,               <span class="co"># Minimum salary to get results for</span></span>
-<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;full_time&#39;</span>: <span class="dv">1</span>                     <span class="co"># Only return full-time job positions</span></span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a><span class="co">#create extract_jobs function to extract job posts</span></span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_jobs(job_url: HttpUrl) <span class="op">-&gt;</span> List[GetJobs]:</span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>  response <span class="op">=</span> requests.get(job_url, params<span class="op">=</span>params) <span class="co">#request from the Adzuna job post page using the request library</span></span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>  <span class="co">#print error message if could not fetch job posts from page</span></span>
-<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> response.status_code <span class="op">!=</span> <span class="dv">200</span>:</span>
-<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>      <span class="cf">raise</span> <span class="pp">Exception</span>(<span class="ss">f&quot;Failed to fetch jobs: </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>  <span class="co">#get job posts in json format</span></span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>  jobs_data <span class="op">=</span> response.json()</span>
-<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>  <span class="co">#initialize empty list to store extracted job posts</span></span>
-<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>  extracted_jobs <span class="op">=</span> []</span>
-<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>  <span class="co">#for each of the extracted job posts</span></span>
-<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> job <span class="kw">in</span> jobs_data.get(<span class="st">&quot;results&quot;</span>, []):</span>
-<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>      <span class="cf">try</span>:</span>
-<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>          job_post <span class="op">=</span> GetJobs( <span class="co">#call GetJobs class</span></span>
-<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>              title <span class="op">=</span> job.get(<span class="st">&quot;title&quot;</span>, <span class="st">&quot;No title&quot;</span>), <span class="co">#extract the job title of the job position post</span></span>
-<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>              company <span class="op">=</span> job.get(<span class="st">&quot;company&quot;</span>, {}).get(<span class="st">&quot;display_name&quot;</span>, <span class="st">&quot;Unknown&quot;</span>), <span class="co">#extract the company name of the job position post</span></span>
-<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>              location <span class="op">=</span> job.get(<span class="st">&quot;location&quot;</span>, {}).get(<span class="st">&quot;display_name&quot;</span>, <span class="st">&quot;Unknown&quot;</span>), <span class="co">#extract the job location of the job position post</span></span>
-<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>              salary <span class="op">=</span> job.get(<span class="st">&quot;salary&quot;</span>, <span class="st">&quot;Not specified&quot;</span>), <span class="co">#extract the job salary information of the job position post</span></span>
-<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>              salary_min <span class="op">=</span> <span class="bu">round</span>(job.get(<span class="st">&quot;salary_min&quot;</span>, <span class="dv">0</span>)), <span class="co">#extract the minimum salary for the job position</span></span>
-<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>              contract_time <span class="op">=</span> job.get(<span class="st">&quot;contract_time&quot;</span>, <span class="st">&quot;Unknown&quot;</span>), <span class="co">#extract employment hours from job position post</span></span>
-<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>              degree <span class="op">=</span> job.get(<span class="st">&quot;degree&quot;</span>, <span class="st">&quot;Unknown&quot;</span>), <span class="co">#extract the work hours ex. Full-time, part time for the job position post</span></span>
-<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>              description <span class="op">=</span> job.get(<span class="st">&quot;description&quot;</span>, <span class="st">&quot;&quot;</span>)[:<span class="dv">250</span>], <span class="co">#extract the job description of the job post</span></span>
-<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>              responsibilities <span class="op">=</span> job.get(<span class="st">&quot;description&quot;</span>, <span class="st">&quot;&quot;</span>)[:<span class="dv">250</span>], <span class="co">#extract the responsibilities, fall back to description if no separate responsibilities found</span></span>
-<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>              about_url <span class="op">=</span> job.get(<span class="st">&quot;redirect_url&quot;</span>)) <span class="co">#extract the url page of job post</span></span>
-<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>          </span>
-<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>          extracted_jobs.append(job_post) <span class="co">#add extracted job to list</span></span>
-<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>      <span class="cf">except</span> ValidationError <span class="im">as</span> e: <span class="co">#raise error if job wasn&#39;t able to get extracted</span></span>
-<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>          <span class="bu">print</span>(<span class="ss">f&quot;Validation error: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a>          </span>
-<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> extracted_jobs <span class="co">#return extracted job posts with the requested parameters</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install needed packages</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pprint <span class="im">import</span> pprint</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> List, Optional, Union</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> string</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pydantic <span class="im">import</span> BaseModel, field_validator, HttpUrl, ValidationError, FilePath</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#define GetJobs class</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GetJobs(BaseModel):</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">#intialize variables in GetJobs class types</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  title: <span class="bu">str</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  company: <span class="bu">str</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  location: <span class="bu">str</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  salary: Optional[Union[<span class="bu">int</span>, <span class="bu">float</span>, <span class="bu">str</span>]]</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  salary_min: <span class="bu">int</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  contract_time: <span class="bu">str</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  degree: <span class="bu">str</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  description: <span class="bu">str</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  about_url: HttpUrl</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="co">#validator to clean the extracted salary to replace &quot;$&quot; and &quot;,&quot; symbols to convert to integer</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">@field_validator</span>(<span class="st">&#39;salary&#39;</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">@classmethod</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> clean_salary(cls, value):</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>      <span class="co">#if the extracted salary is integer or float value then return the salary value</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="bu">isinstance</span>(value,(<span class="bu">int</span>, <span class="bu">float</span>)):</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>          <span class="cf">return</span> value</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>      <span class="co">#if the extracted salary is string type then remove the &quot;$&quot; and the &quot;,&quot; symbols</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="bu">isinstance</span>(value, <span class="bu">str</span>):</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>          cleaned_sal <span class="op">=</span> value.replace(<span class="st">&quot;$&quot;</span>, <span class="st">&quot;&quot;</span>).replace(<span class="st">&quot;,&quot;</span>, <span class="st">&quot;&quot;</span>).strip()</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>          <span class="co">#handle errors for string type extracted salary</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>          <span class="cf">try</span>:</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>              <span class="cf">return</span> <span class="bu">int</span>(<span class="bu">float</span>(cleaned_sal))</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>          <span class="cf">except</span> <span class="pp">ValueError</span>:</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>              <span class="cf">return</span> <span class="st">&quot;Not specified&quot;</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>          <span class="cf">return</span> <span class="st">&quot;Not specified&quot;</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  <span class="co">#validator for salary_min so it&#39;s always a clean int format</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">@field_validator</span>(<span class="st">&#39;salary_min&#39;</span>, mode<span class="op">=</span><span class="st">&#39;before&#39;</span>)</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">@classmethod</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> convert_salary_min(cls, value):</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="bu">isinstance</span>(value, <span class="bu">float</span>):</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>          <span class="cf">return</span> <span class="bu">round</span>(value) <span class="co">#return rounded conversion of salary min value</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> value</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="co">#validator for extracted location to replace &quot;,&quot; symbol</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">@field_validator</span>(<span class="st">&#39;location&#39;</span>)</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">@classmethod</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> clean_location(cls, value: <span class="bu">str</span>):</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> value.replace(<span class="st">&quot;“&quot;</span>,<span class="st">&quot;&quot;</span>).replace(<span class="st">&quot;”&quot;</span>,<span class="st">&quot;&quot;</span>)</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="co">#define API request parameters</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> {</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;app_id&#39;</span>: APP_ID,                  <span class="co"># app ID</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;app_key&#39;</span>: API_KEY,                <span class="co"># API key</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;what&#39;</span>: <span class="st">&#39;data scientist&#39;</span>,          <span class="co"># Job title or keywords</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;where&#39;</span>: <span class="st">&#39;Washington, DC&#39;</span>,         <span class="co"># Location</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;results_per_page&#39;</span>: <span class="dv">1</span>,             <span class="co"># Number of results per page</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;sort_by&#39;</span>: <span class="st">&#39;date&#39;</span>,                 <span class="co"># Sort by most recent</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;salary_min&#39;</span>: <span class="dv">90000</span>,               <span class="co"># Minimum salary to get results for</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;full_time&#39;</span>: <span class="dv">1</span>                     <span class="co"># Only return full-time job positions</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="co">#create extract_jobs function to extract job posts</span></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_jobs(job_url: HttpUrl) <span class="op">-&gt;</span> List[GetJobs]:</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>  response <span class="op">=</span> requests.get(job_url, params<span class="op">=</span>params) <span class="co">#request from the Adzuna job post page using the request library</span></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>  <span class="co">#print error message if could not fetch job posts from page</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> response.status_code <span class="op">!=</span> <span class="dv">200</span>:</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>      <span class="cf">raise</span> <span class="pp">Exception</span>(<span class="ss">f&quot;Failed to fetch jobs: </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>  <span class="co">#get job posts in json format</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>  jobs_data <span class="op">=</span> response.json()</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>  <span class="co">#initialize empty list to store extracted job posts</span></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>  extracted_jobs <span class="op">=</span> []</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>  <span class="co">#for each of the extracted job posts</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> job <span class="kw">in</span> jobs_data.get(<span class="st">&quot;results&quot;</span>, []):</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>      <span class="cf">try</span>:</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>          job_post <span class="op">=</span> GetJobs( <span class="co">#call GetJobs class</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>              title <span class="op">=</span> job.get(<span class="st">&quot;title&quot;</span>, <span class="st">&quot;No title&quot;</span>), <span class="co">#extract the job title of the job position post</span></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>              company <span class="op">=</span> job.get(<span class="st">&quot;company&quot;</span>, {}).get(<span class="st">&quot;display_name&quot;</span>, <span class="st">&quot;Unknown&quot;</span>), <span class="co">#extract the company name of the job position post</span></span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>              location <span class="op">=</span> job.get(<span class="st">&quot;location&quot;</span>, {}).get(<span class="st">&quot;display_name&quot;</span>, <span class="st">&quot;Unknown&quot;</span>), <span class="co">#extract the job location of the job position post</span></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>              salary <span class="op">=</span> job.get(<span class="st">&quot;salary&quot;</span>, <span class="st">&quot;Not specified&quot;</span>), <span class="co">#extract the job salary information of the job position post</span></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>              salary_min <span class="op">=</span> <span class="bu">round</span>(job.get(<span class="st">&quot;salary_min&quot;</span>, <span class="dv">0</span>)), <span class="co">#extract the minimum salary for the job position</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>              contract_time <span class="op">=</span> job.get(<span class="st">&quot;contract_time&quot;</span>, <span class="st">&quot;Unknown&quot;</span>), <span class="co">#extract employment hours from job position post</span></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>              degree <span class="op">=</span> job.get(<span class="st">&quot;degree&quot;</span>, <span class="st">&quot;Unknown&quot;</span>), <span class="co">#extract the work hours ex. Full-time, part time for the job position post</span></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>              description <span class="op">=</span> job.get(<span class="st">&quot;description&quot;</span>, <span class="st">&quot;&quot;</span>)[:<span class="dv">250</span>], <span class="co">#extract the job description of the job post</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>              about_url <span class="op">=</span> job.get(<span class="st">&quot;redirect_url&quot;</span>)) <span class="co">#extract the url page of job post</span></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>          extracted_jobs.append(job_post) <span class="co">#add extracted job to list</span></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>      <span class="cf">except</span> ValidationError <span class="im">as</span> e: <span class="co">#raise error if job wasn&#39;t able to get extracted</span></span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>          <span class="bu">print</span>(<span class="ss">f&quot;Validation error: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> extracted_jobs <span class="co">#return extracted job posts with the requested parameters</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section id="transformation-step" class="level1">
 <h1>Transformation Step</h1>
-<div id="a52cecf9" class="cell" data-execution_count="7">
+<div id="5b287fed" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to transform extract job info into a friendly email structure</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transform_extracted_jobs(job_obj: List[GetJobs]) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">#if no job post extracted then return error message</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> job_obj:</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">&quot;No job posts found.&quot;</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">#set text for email body</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    email_body <span class="op">=</span> <span class="st">&quot;Your Daily Job Digest: Data Scientist roles in Washington, DC*</span><span class="ch">\n\n</span><span class="st">&quot;</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">#iterate over extracted job to be displayed in the following format</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, job <span class="kw">in</span> <span class="bu">enumerate</span>(job_obj, start<span class="op">=</span><span class="dv">1</span>):</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        job_entry <span class="op">=</span> (</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Title </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>job<span class="sc">.</span>title<span class="sc">}</span><span class="ss">**</span><span class="ch">\n</span><span class="ss">&quot;</span>                   <span class="co">#print job title</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Company: </span><span class="sc">{</span>job<span class="sc">.</span>company<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>                     <span class="co">#print company name</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Location: </span><span class="sc">{</span>job<span class="sc">.</span>location<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>                   <span class="co">#print location of company</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Salary: </span><span class="sc">{</span>job<span class="sc">.</span>salary<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>                       <span class="co">#print job salary</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Minimum salary: </span><span class="sc">{</span>job<span class="sc">.</span>salary_min<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>          <span class="co">#print job minimum salart</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Employment type: </span><span class="sc">{</span>job<span class="sc">.</span>contract_time<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>       <span class="co">#print job type in terms of full-time. part-time, internship</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Degree requirement: </span><span class="sc">{</span>job<span class="sc">.</span>degree<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>           <span class="co">#print education requirement for job post</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Description summary: </span><span class="sc">{</span>job<span class="sc">.</span>description<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>     <span class="co">#print job description</span></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Responsibilities: </span><span class="sc">{</span>job<span class="sc">.</span>responsibilities<span class="sc">}</span><span class="ch">\n</span><span class="ss">&quot;</span>   <span class="co">#print job responsibilites</span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;More info url: </span><span class="sc">{</span>job<span class="sc">.</span>about_url<span class="sc">}</span><span class="ss">)</span><span class="ch">\n\n</span><span class="ss">&quot;</span>          <span class="co">#print url of the job post</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        email_body <span class="op">+=</span> job_entry <span class="co">#append the job_entry to email_body</span></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> email_body <span class="co">#return the email_body</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to transform extract job info into a friendly email structure</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transform_extracted_jobs(job_obj: List[GetJobs]) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">#if no job post extracted then return error message</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> job_obj:</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">&quot;No job posts found.&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">#set text for email body</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    email_body <span class="op">=</span> <span class="st">&quot;&lt;h2 style=&#39;font-family: Arial;&#39;&gt;Your Daily Job Digest: Data Scientist roles in Washington, DC&lt;/h2&gt;&lt;br&gt;&quot;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">#iterate over extracted job to be displayed in the following format</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, job <span class="kw">in</span> <span class="bu">enumerate</span>(job_obj, start<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        job_entry <span class="op">=</span> (<span class="ss">f&quot;&quot;&quot;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ss">        &lt;div style=&#39;font-family: Arial;&#39;&gt;             </span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;p style=&#39;font-size:16px; font-weight:bold;&#39;&gt;Title </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>job<span class="sc">.</span>title<span class="sc">}</span><span class="ss">&lt;/p&gt;  </span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;p style=&#39;font-size:14px;&#39;&gt;Company: </span><span class="sc">{</span>job<span class="sc">.</span>company<span class="sc">}</span><span class="ss">&lt;/p&gt;                    </span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;p&gt;Location: </span><span class="sc">{</span>job<span class="sc">.</span>location<span class="sc">}</span><span class="ss">&lt;/p&gt;                   </span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;p&gt;Salary: </span><span class="sc">{</span>job<span class="sc">.</span>salary<span class="sc">}</span><span class="ss">&lt;/p&gt;                  </span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;p&gt;&lt;strong&gt;Minimum salary: &lt;/strong&gt;</span><span class="sc">{</span>job<span class="sc">.</span>salary_min<span class="sc">}</span><span class="ss">&lt;/p&gt;          </span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;p&gt;Employment type: </span><span class="sc">{</span>job<span class="sc">.</span>contract_time<span class="sc">}</span><span class="ss">&lt;/p&gt;      </span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;p&gt;Degree requirement: </span><span class="sc">{</span>job<span class="sc">.</span>degree<span class="sc">}</span><span class="ss">&lt;/p&gt;           </span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;p&gt;Description summary: </span><span class="sc">{</span>job<span class="sc">.</span>description<span class="sc">}</span><span class="ss">&lt;/p&gt;    </span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;p&gt;More info url: </span><span class="sc">{</span>job<span class="sc">.</span>about_url<span class="sc">}</span><span class="ss">)&lt;/p&gt;          </span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="ss">        &lt;/div&gt;</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="ss">        &quot;&quot;&quot;</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        <span class="co">#updated font type to Arial</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print job title, set font size and bold title</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print company name</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print location of company</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print job salary</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print job minimum salary</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print job type in terms of full-time. part-time, internship</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print education requirement for job post</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print job description</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>        <span class="co">#print url of the job post</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>        email_body <span class="op">+=</span> job_entry <span class="co">#append the job_entry to email_body</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> email_body <span class="co">#return the email_body</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section id="load-step" class="level1">
 <h1>Load Step</h1>
-<div id="b8ca7fd1" class="cell" data-execution_count="8">
+<div id="778275d6" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to load the extracted job posts in email format into a json file as test </span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_jobs_to_file(job_str: <span class="bu">str</span>, load_filepath: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> <span class="bu">open</span>(load_filepath, <span class="st">&#39;a&#39;</span>) <span class="im">as</span> <span class="bu">file</span>:</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">file</span>.write(job_str <span class="op">+</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to load the extracted job posts in email format into a json file as test </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_jobs_to_file(job_str: <span class="bu">str</span>, load_filepath: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> <span class="bu">open</span>(load_filepath, <span class="st">&#39;a&#39;</span>) <span class="im">as</span> <span class="bu">file</span>:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">file</span>.write(job_str <span class="op">+</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_jobs_as_json(job_list: List[GetJobs], filepath: <span class="bu">str</span>):</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> <span class="bu">open</span>(filepath, <span class="st">&#39;w&#39;</span>) <span class="im">as</span> f:</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        json.dump([job.model_dump(mode<span class="op">=</span><span class="st">&quot;json&quot;</span>) <span class="cf">for</span> job <span class="kw">in</span> job_list], f, indent<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="74f62530" class="cell" data-execution_count="9">
+<div id="203698fd" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to define url to extract job posts</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scrape_job(</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    job_url: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;https://api.adzuna.com/v1/api/jobs/us/search/1&quot;</span>, <span class="co">#extract job posts from this Adzuna url</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    jobs_filename: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;extracted_jobs.json&quot;</span> <span class="co">#load extracted data to json file with specified title</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>):</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  extracted_jobs <span class="op">=</span> extract_jobs(job_url) <span class="co">#call the extract_jobs function</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#add the transformatiom_extracted_jobs function step</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  email_template <span class="op">=</span> transform_extracted_jobs(extracted_jobs)</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">#print out the email_friendly version of extracted jobs in email template</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(email_template)</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">#file_result = load_jobs_to_file(email_template, jobs_filename)</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="co">#return(file_result) #return extracted job posts in the json file output</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  load_jobs_to_file(email_template, jobs_filename)</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>scrape_job() <span class="co">#call the scrape_job function</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to define url to extract job posts</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># def scrape_job_draft1(</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     job_url: str = &quot;https://api.adzuna.com/v1/api/jobs/us/search/1&quot;, #extract job posts from this Adzuna url</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#     jobs_filename: str = &quot;extracted_jobs.json&quot; #load extracted data to json file with specified title</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ):</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   extracted_jobs = extract_jobs(job_url) #call the extract_jobs function</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   #add the transformatiom_extracted_jobs function step</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   email_template = transform_extracted_jobs(extracted_jobs)</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   #print out the email_friendly version of extracted jobs in email template</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#   print(email_template)</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#   #file_result = load_jobs_to_file(email_template, jobs_filename)</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#   #return(file_result) #return extracted job posts in the json file output</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#   load_jobs_to_file(email_template, jobs_filename)</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># scrape_job() #call the scrape_job function</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="41ccd200" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to define url to extract job posts</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scrape_job(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    job_url: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;https://api.adzuna.com/v1/api/jobs/us/search/1&quot;</span>, <span class="co">#extract job posts from this Adzuna url</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    jobs_filename: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;extracted_jobs_structured.json&quot;</span> <span class="co">#load extracted data to json file with specified title</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    extracted_jobs <span class="op">=</span> extract_jobs(job_url) <span class="co">#call the extract_jobs function</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Save structured JSON</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    load_jobs_as_json(extracted_jobs, jobs_filename)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Transform for email content</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    email_template <span class="op">=</span> transform_extracted_jobs(extracted_jobs)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> email_template  <span class="co"># return text for the email</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>scrape_job() <span class="co">#call scrape_job function</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>&quot;&lt;h2 style=&#39;font-family: Arial;&#39;&gt;Your Daily Job Digest: Data Scientist roles in Washington, DC&lt;/h2&gt;&lt;br&gt;\n        &lt;div style=&#39;font-family: Arial;&#39;&gt;             \n            &lt;p style=&#39;font-size:16px; font-weight:bold;&#39;&gt;Title 1: Director of Product Design, Growth &amp; Engagement -Remote&lt;/p&gt;  \n            &lt;p style=&#39;font-size:14px;&#39;&gt;Company: Included Health&lt;/p&gt;                    \n            &lt;p&gt;Location: Washington, Washington, D.C.&lt;/p&gt;                   \n            &lt;p&gt;Salary: Not specified&lt;/p&gt;                  \n            &lt;p&gt;&lt;strong&gt;Minimum salary: &lt;/strong&gt;131850&lt;/p&gt;          \n            &lt;p&gt;Employment type: full_time&lt;/p&gt;      \n            &lt;p&gt;Degree requirement: Unknown&lt;/p&gt;           \n            &lt;p&gt;Description summary: At Included Health, we’re on a mission to raise the standard of healthcare for everyone. We’re a new kind of healthcare company, focused on breaking down barriers to provide high-quality care for every person in every community. We offer guidance, ad&lt;/p&gt;    \n            &lt;p&gt;More info url: https://www.adzuna.com/land/ad/5164190467?se=bpfd_NMi8BGuG2jpRCZXLA&amp;utm_medium=api&amp;utm_source=1381a6ed&amp;v=483E7F80BC4C7988C6A0000DE442DE01809DEE20)&lt;/p&gt;          \n        &lt;/div&gt;\n        &quot;</code></pre>
+</div>
+</div>
+<div id="7bda20ea" class="cell" data-execution_count="7">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import packages to sent out email</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> smtplib</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> email.message <span class="im">import</span> EmailMessage</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to load extracted job posts to email</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> send_email_smtp(subject: <span class="bu">str</span>, body: <span class="bu">str</span>, to_email: <span class="bu">str</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                    from_email: <span class="bu">str</span>, app_password: <span class="bu">str</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                    attachment_path: <span class="bu">str</span> <span class="op">=</span> <span class="va">None</span>):</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    msg <span class="op">=</span> EmailMessage()</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">#msg.set_content(body)</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    msg.set_content(<span class="st">&quot;Email contains HTML information&quot;</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    msg.add_alternative(body, subtype<span class="op">=</span><span class="st">&#39;html&#39;</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    msg[<span class="st">&#39;Subject&#39;</span>] <span class="op">=</span> subject</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    msg[<span class="st">&#39;From&#39;</span>] <span class="op">=</span> from_email</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    msg[<span class="st">&#39;To&#39;</span>] <span class="op">=</span> to_email</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add attachment if provided</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> attachment_path:</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> <span class="bu">open</span>(attachment_path, <span class="st">&#39;rb&#39;</span>) <span class="im">as</span> f:</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>            file_data <span class="op">=</span> f.read()</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>            file_name <span class="op">=</span> os.path.basename(attachment_path)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        msg.add_attachment(file_data, maintype<span class="op">=</span><span class="st">&#39;application&#39;</span>, subtype<span class="op">=</span><span class="st">&#39;json&#39;</span>, filename<span class="op">=</span>file_name)</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Send</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> smtplib.SMTP_SSL(<span class="st">&#39;smtp.gmail.com&#39;</span>, <span class="dv">465</span>) <span class="im">as</span> smtp:</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>            smtp.login(from_email, app_password)</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>            smtp.send_message(msg)</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="st">&quot;Email sent successfully!&quot;</span>)</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;Failed to send email: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="030f6975" class="cell" data-execution_count="8">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>load_dotenv(dotenv_path<span class="op">=</span><span class="st">&quot;./.env&quot;</span>) <span class="co">#store app password in hidden file</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>app_password <span class="op">=</span> os.getenv(<span class="st">&quot;GMAIL_APP_PASSWORD&quot;</span>) <span class="co">#get app password stored in hidden file</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#print(&quot;App password loaded:&quot;, app_password)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="032d1007" class="cell" data-execution_count="9">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#extract job post from Adzuna site</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>email_content <span class="op">=</span> scrape_job(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    job_url<span class="op">=</span><span class="st">&quot;https://api.adzuna.com/v1/api/jobs/us/search/1&quot;</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    jobs_filename<span class="op">=</span><span class="st">&quot;extracted_jobs_structured.json&quot;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#send out to email</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>send_email_smtp(</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    subject<span class="op">=</span><span class="st">&quot;🧾 Your Daily Data Scientist Job Digest&quot;</span>, <span class="co">#email subject line</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    body<span class="op">=</span>email_content, <span class="co">#email body</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">#to_email=&quot;liwen881129@gmail.com&quot;,</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">#from_email=&quot;wendy881129@gmail.com&quot;,</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    to_email<span class="op">=</span><span class="st">&quot;yanni.guo888@gmail.com&quot;</span>, <span class="co">#send to email</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    from_email<span class="op">=</span><span class="st">&quot;jentestguo@gmail.com&quot;</span>, <span class="co">#from email</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    app_password<span class="op">=</span>app_password, <span class="co">#specify app password</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    attachment_path<span class="op">=</span><span class="st">&quot;extracted_jobs_structured.json&quot;</span> <span class="co">#add json file of extracted job posts as attachment to email</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Your Daily Job Digest: Data Scientist roles in Washington, DC*
-
-Title 1: Ad-Tech Sales Director**
-Company: Pixalate, Inc.
-Location: Washington, Washington, D.C.
-Salary: Not specified
-Minimum salary: 139350
-Employment type: full_time
-Degree requirement: Unknown
-Description summary: Ad-Tech Sales Director Employment Type: Full-Time Location: VA / Washington, DC Metro Area Minimum Experience : 7 years experience Pixalate is an online trust and safety platform that protects businesses, consumers and children from deceptive, fraudu
-Responsibilities: Ad-Tech Sales Director Employment Type: Full-Time Location: VA / Washington, DC Metro Area Minimum Experience : 7 years experience Pixalate is an online trust and safety platform that protects businesses, consumers and children from deceptive, fraudu
-More info url: https://www.adzuna.com/details/5155635366?utm_medium=api&amp;utm_source=1381a6ed)
-
-</code></pre>
+<pre><code>Email sent successfully!</code></pre>
 </div>
 </div>
 </section>

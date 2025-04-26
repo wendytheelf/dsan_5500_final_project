@@ -17,7 +17,6 @@ execute:
   echo: true
   warning: false
   message: false
-  freeze: auto 
 jupyter: python3
 ---
 
@@ -29,6 +28,7 @@ import json
 import os
 import requests
 
+#Obtain API key and app ID from the Adzuna site to extract job posts
 #retrieve API key from stored json file
 try:
     with open('Jen_api.json') as f:
@@ -47,50 +47,6 @@ except json.JSONDecodeError:
     print("Error reading json file.")
 ```
 
-# Test 1 extract, transform, and print out job postions
-
-```{python}
-# Define your search parameters
-# params = {
-#     'app_id': APP_ID,
-#     'app_key': API_KEY,
-#     'what': 'data scientist',          # Job title or keywords
-#     'where': 'Washington, DC',         # Location
-#     'results_per_page': 2,             # Number of results per page
-#     # 'sort_by': 'date'                  # Sort by most recent
-# }
-```
-
-```{python}
-#define url site on Adzuna to scrape job position posts
-# url = 'https://api.adzuna.com/v1/api/jobs/us/search/1'
-
-```
-
-```{python}
-# Make the request
-# response = requests.get(url, params=params)
-
-```
-
-```{python}
-# Check response
-# if response.status_code == 200:
-#     data = response.json()
-#     for job in data.get('results', []):
-#         print('🧾 Job Title:', job.get('title'))
-#         print('🏢 Company:', job.get('company', {}).get('display_name'))
-#         print('📍 Location:', job.get('location', {}).get('display_name'))
-#         print('📝 Description:', job.get('description')[:150], '...')
-#         print('🔗 URL:', job.get('redirect_url'))
-#         print('-' * 80)
-# else:
-#     print('Failed to retrieve jobs:', response.status_code)
-#     print(response.text)
-```
-
-# Test 2 with BaseModel class ETL
-
 # Extract Step
 
 ```{python}
@@ -98,8 +54,6 @@ except json.JSONDecodeError:
 from pprint import pprint
 from typing import List, Optional, Union
 import string
-
-#from bs4 import BeautifulSoup
 from pydantic import BaseModel, field_validator, HttpUrl, ValidationError, FilePath
 
 #define GetJobs class
@@ -113,7 +67,6 @@ class GetJobs(BaseModel):
   contract_time: str
   degree: str
   description: str
-  responsibilities: str
   about_url: HttpUrl
 
   #validator to clean the extracted salary to replace "$" and "," symbols to convert to integer
@@ -157,7 +110,7 @@ params = {
     'where': 'Washington, DC',         # Location
     'results_per_page': 1,             # Number of results per page
     'sort_by': 'date',                 # Sort by most recent
-    'salary_min': 50000,               # Minimum salary to get results for
+    'salary_min': 90000,               # Minimum salary to get results for
     'full_time': 1                     # Only return full-time job positions
 }
 
@@ -185,7 +138,6 @@ def extract_jobs(job_url: HttpUrl) -> List[GetJobs]:
               contract_time = job.get("contract_time", "Unknown"), #extract employment hours from job position post
               degree = job.get("degree", "Unknown"), #extract the work hours ex. Full-time, part time for the job position post
               description = job.get("description", "")[:250], #extract the job description of the job post
-              responsibilities = job.get("description", "")[:250], #extract the responsibilities, fall back to description if no separate responsibilities found
               about_url = job.get("redirect_url")) #extract the url page of job post
           
           extracted_jobs.append(job_post) #add extracted job to list
@@ -207,21 +159,34 @@ def transform_extracted_jobs(job_obj: List[GetJobs]) -> str:
         return "No job posts found."
 
     #set text for email body
-    email_body = "Your Daily Job Digest: Data Scientist roles in Washington, DC*\n\n"
+    email_body = "<h2 style='font-family: Arial;'>Your Daily Job Digest: Data Scientist roles in Washington, DC</h2><br>"
 
     #iterate over extracted job to be displayed in the following format
     for i, job in enumerate(job_obj, start=1):
-        job_entry = (
-            f"Title {i}: {job.title}**\n"                   #print job title
-            f"Company: {job.company}\n"                     #print company name
-            f"Location: {job.location}\n"                   #print location of company
-            f"Salary: {job.salary}\n"                       #print job salary
-            f"Minimum salary: {job.salary_min}\n"          #print job minimum salart
-            f"Employment type: {job.contract_time}\n"       #print job type in terms of full-time. part-time, internship
-            f"Degree requirement: {job.degree}\n"           #print education requirement for job post
-            f"Description summary: {job.description}\n"     #print job description
-            f"Responsibilities: {job.responsibilities}\n"   #print job responsibilites
-            f"More info url: {job.about_url})\n\n"          #print url of the job post
+        job_entry = (f"""
+        <div style='font-family: Arial;'>             
+            <p style='font-size:16px; font-weight:bold;'>Title {i}: {job.title}</p>  
+            <p style='font-size:14px;'>Company: {job.company}</p>                    
+            <p>Location: {job.location}</p>                   
+            <p>Salary: {job.salary}</p>                  
+            <p><strong>Minimum salary: </strong>{job.salary_min}</p>          
+            <p>Employment type: {job.contract_time}</p>      
+            <p>Degree requirement: {job.degree}</p>           
+            <p>Description summary: {job.description}</p>    
+            <p>More info url: {job.about_url})</p>          
+        </div>
+        """
+        #updated font type to Arial
+        #print job title, set font size and bold title
+        #print company name
+        #print location of company
+        #print job salary
+        #print job minimum salary
+        #print job type in terms of full-time. part-time, internship
+        #print education requirement for job post
+        #print job description
+        #print url of the job post
+        
         )
         email_body += job_entry #append the job_entry to email_body
     return email_body #return the email_body
@@ -243,30 +208,31 @@ def load_jobs_as_json(job_list: List[GetJobs], filepath: str):
 
 ```{python}
 #create function to define url to extract job posts
-def scrape_job(
-    job_url: str = "https://api.adzuna.com/v1/api/jobs/us/search/1", #extract job posts from this Adzuna url
-    jobs_filename: str = "extracted_jobs.json" #load extracted data to json file with specified title
-):
-  extracted_jobs = extract_jobs(job_url) #call the extract_jobs function
+# def scrape_job_draft1(
+#     job_url: str = "https://api.adzuna.com/v1/api/jobs/us/search/1", #extract job posts from this Adzuna url
+#     jobs_filename: str = "extracted_jobs.json" #load extracted data to json file with specified title
+# ):
+#   extracted_jobs = extract_jobs(job_url) #call the extract_jobs function
 
-  #add the transformatiom_extracted_jobs function step
-  email_template = transform_extracted_jobs(extracted_jobs)
-  #print out the email_friendly version of extracted jobs in email template
-  print(email_template)
+#   #add the transformatiom_extracted_jobs function step
+#   email_template = transform_extracted_jobs(extracted_jobs)
+#   #print out the email_friendly version of extracted jobs in email template
+#   print(email_template)
 
-  #file_result = load_jobs_to_file(email_template, jobs_filename)
-  #return(file_result) #return extracted job posts in the json file output
-  load_jobs_to_file(email_template, jobs_filename)
+#   #file_result = load_jobs_to_file(email_template, jobs_filename)
+#   #return(file_result) #return extracted job posts in the json file output
+#   load_jobs_to_file(email_template, jobs_filename)
 
 # scrape_job() #call the scrape_job function
 ```
 
 ```{python}
+#create function to define url to extract job posts
 def scrape_job(
-    job_url: str = "https://api.adzuna.com/v1/api/jobs/us/search/1", 
-    jobs_filename: str = "extracted_jobs_structured.json"
+    job_url: str = "https://api.adzuna.com/v1/api/jobs/us/search/1", #extract job posts from this Adzuna url
+    jobs_filename: str = "extracted_jobs_structured.json" #load extracted data to json file with specified title
 ):
-    extracted_jobs = extract_jobs(job_url)
+    extracted_jobs = extract_jobs(job_url) #call the extract_jobs function
     
     # Save structured JSON
     load_jobs_as_json(extracted_jobs, jobs_filename)
@@ -275,19 +241,22 @@ def scrape_job(
     email_template = transform_extracted_jobs(extracted_jobs)
     return email_template  # return text for the email
 
-scrape_job()
+scrape_job() #call scrape_job function
 ```
-    J
 
 ```{python}
+#import packages to sent out email
 import smtplib
 from email.message import EmailMessage
 
+#create function to load extracted job posts to email
 def send_email_smtp(subject: str, body: str, to_email: str,
                     from_email: str, app_password: str,
                     attachment_path: str = None):
     msg = EmailMessage()
-    msg.set_content(body)
+    #msg.set_content(body)
+    msg.set_content("Email contains HTML information")
+    msg.add_alternative(body, subtype='html')
     msg['Subject'] = subject
     msg['From'] = from_email
     msg['To'] = to_email
@@ -309,31 +278,32 @@ def send_email_smtp(subject: str, body: str, to_email: str,
         print(f"Failed to send email: {e}")
 ```
 
-
 ```{python}
 from dotenv import load_dotenv
 import os
 
-load_dotenv(dotenv_path="./.env")
+load_dotenv(dotenv_path="./.env") #store app password in hidden file
 
-app_password = os.getenv("GMAIL_APP_PASSWORD")
-# print("App password loaded:", app_password)
+app_password = os.getenv("GMAIL_APP_PASSWORD") #get app password stored in hidden file
+#print("App password loaded:", app_password)
 ```
 
-
 ```{python}
+#extract job post from Adzuna site
 email_content = scrape_job(
     job_url="https://api.adzuna.com/v1/api/jobs/us/search/1",
     jobs_filename="extracted_jobs_structured.json"
 )
-
+#send out to email
 send_email_smtp(
-    subject="🧾 Your Daily Data Scientist Job Digest",
-    body=email_content,
-    to_email="liwen881129@gmail.com",
-    from_email="wendy881129@gmail.com",
-    app_password=app_password,
-    attachment_path="extracted_jobs_structured.json"
+    subject="🧾 Your Daily Data Scientist Job Digest", #email subject line
+    body=email_content, #email body
+    #to_email="liwen881129@gmail.com",
+    #from_email="wendy881129@gmail.com",
+    to_email="yanni.guo888@gmail.com", #send to email
+    from_email="jentestguo@gmail.com", #from email
+    app_password=app_password, #specify app password
+    attachment_path="extracted_jobs_structured.json" #add json file of extracted job posts as attachment to email
 )
 
 ```
