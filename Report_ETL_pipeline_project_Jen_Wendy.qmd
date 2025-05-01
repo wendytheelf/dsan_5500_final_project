@@ -1,0 +1,54 @@
+---
+title: DSAN 5500 Final Project Report Job Position Posts ETL Pipeline
+subtitle: A DSAN 5500
+author: Jen Guo and Wendy Hu
+date: last-modified
+date-format: long
+format:
+  html:
+    toc: true
+    code-fold: true
+    embed-resources: true
+    css: styles.css
+bibliography: references.bib
+---
+
+# Abstract
+
+We decided to do our DSAN 5500 final project on option 5: Building an ETL (Extract, Transform, Load) pipeline. Our project focused on speeding up the job search process by leveraging the Adzuna API tokens and scraping job positions on the Adzuna website. After obtaining the authorized public usage Adzuna API key, we were able to successfully extract the most recent five Data Scientist job position listings located in Washington, D.C. from the Adzuna website. The data extracted the following important attributes from the data scientist job posts: job title, location, company name, salary, minimum salary, url of job post, contract time (ie. full-time, part-time), degree, and job description. After extracting those job position parameters, our code was able to implement transformation by converting the extracted raw data into a user friendly email format. Important job details were highlighted through bold formatting and large scaling of font sizes, and the style font was changed to Arial font to increase readability and draw more attention to certain aspects of the job descriptions. For the last stage of the ETL pipeline, the transformed data was loaded into an email output. The front end email output has a friendly user interface since we made the layout to be professional and have a modern layout. The neat structure and Arial style font allowed users to quickly assess the new job post opportunities and determine if their qualifications and interest aligns with the job post. This job post extraction ETL pipeline aids users by helping them review new job posts quicker so they will be able to evaluate if the job position will be worth their time to apply. Thus, this job post extraction ETL pipeline is a practical tool for job seekers searching for Data Scientist roles in the Washington, D.C. area.
+
+# Motivation
+
+We wanted to create an ETL pipeline that extracts new job posts for data scientist positions in Washington, DC to help users with their job search process. As graduate students, we are constantly applying for new jobs or internships because we want to gain experiences and get a career in our field. To utilize our knowledge on building ETL pipelines gained from the DSAN 5500 class, it was best to apply that knowledge to create a tool to aid our job search. We decided to use the Adzuna site to extract job posts because the Adzuna API key was free to obtain and because the job posts had good prompts about the job positions. We decided to load the extracted and transformed job posts from the Adzuna site into an email, so that users will receive the information fast so users will be able to apply to those new jobs sooner, and will be able to review new job posts quicker. 
+
+# Methodology
+
+The first step to the ETL pipeline was setting up an API key and app ID for the Adzuna api. The API key acts as a token that allows access to the Adzuna job site so that we could scrape job posts from the site. In order to get an Adzuna API key, first go to the Adzuna site to create your own account. Then follow through the instructions to get your own API key and app ID. Then store the API key and app ID in a json file. We put our json file that contained the API key in the .gitignore file. After securing and storing the API key, we wrote the code to access the json file and to print specific error messages if no API key was found or if the API key was not valid. <cite>\@adzuna_api</cite>
+
+In the Extraction step, we extended and updated the BaseModel class from homework 4 of the DSAN 5500 class. First, we defined the variables and their data types. The variables are title, company, location, salary, minimum salary, and description. Then set up some field validators to make sure , which are title, company, location, salary, salary_min, contract_time, degree, description, and about_url. Then we set up field validators using pydantic to ensure the code is returning a clean format of the specified variables. After, we set up parameters for the API request. We only wanted the API to extract Data Scientist job titles, where the location is in Washington, DC, only want 5 job post results, only want the newest job post for the specified job title and location, only want job posts that has a minimum salary of 90000, and only want full time jobs returned from the Adzuna website. To execute scraping the job posts from the Adzuna site, we defined a function - extract_jobs to check for a valid API key, get the extracted data into a json file, and extract the information using the specified variables and initially store the data in a list. If certain variable information in the job position posts were not found, then the function would return the default value “Unknown”. <cite>\@adzuna_search_ads</cite>
+
+In the Transformation step of the ETL pipeline, the defined transform_extracted_jobs function transforms the extracted raw data into a neat email format. The email body consists of the extracted job description variables output are updated to Arial style to enhance readability. An email header is added to notify the user this email contains information about their daily job digest of new Data Scientist roles in Washington, D.C. from the Adzuna website. The email returns the following information in order: email header, job title, company name, location of company, salary, minimum salary, employment type, degree requirements, job description, and job post url. The job title and minimum salary descriptions are bolded since they are more important factors in a job post and would draw the user’s attention. The job title and company name descriptions have increased font to make those information distinctive from the rest of the job post details. 
+
+The Load step of our ETL pipeline plays a critical role in finalizing the data flow by taking the cleaned and transformed job listing data and making it accessible, persistent, and actionable. This phase includes two primary tasks: storing the data locally in a structured format, and delivering it through automated email notifications. 
+
+Once the job data is extracted from the Adzuna API and validated using Pydantic, it is serialized into a JSON-friendly structure. This method ensures that complex data types are properly converted to strings, which allows for compatibility with standard JSON formatting. The file was saved as a JSON, acting as a record of the most recent job postings. 
+
+In addition to saving the structured data locally, the Load step also handles the automated delivery of job updates via email. Using Python’s built-in smtplib, we constructed a function that composes and sends a daily email digest. This digest summarizes the key details of each job posting—such as the title, company name, location, salary, and application link—into a clean, human-readable format. An optional feature also allows for the JSON file to be attached to the email, enabling users to access both the summarized version and the full structured dataset in one place. <cite>\@realpython_email</cite>
+
+To ensure secure credential management throughout the Load step, we used the dotenv package to load sensitive information like Gmail login credentials and API keys from a separate file. This prevents hardcoding secrets in the main code base and enhances the project’s security and maintainability, particularly when deployed across shared or automated environments.
+
+# Result
+
+The result of our ETL pipeline is an email output along with an attached json file that contains the five newest Data Scientist job position posts located in Washington, D.C. extracted from the Adzuna website at the time of deployment. Each job post result consists of the following descriptions: job title, company name, location of company, salary, minimum salary, employment type, degree requirements, job description, and job post url. We were able to load the transformed job position posts into our emails. The following screenshots were taken from our email inbox. The first image below shows the email body sent to Jen’s Gmail account. The emails contain the 5 newest job posts for Data Scientist roles in Washington, D.C. The second image shows the json file attached to the email, which also contains the same 5 newest job posts from the email body.
+
+![](result images/ETL pipeline email1.png){width="713"}
+
+![](result images/ETL pipeline email2.png){width="715"}
+
+# Resources
+
+“Adzuna API.” Adzuna Developer API, Adzuna Ltd., developer.adzuna.com/. Accessed 20 April 2025.
+
+“Search Ads.” Adzuna Developer API Documentation, Adzuna Ltd., developer.adzuna.com/docs/search. Accessed 20 April 2025.
+
+“Sending Emails With Python.” Real Python, Real Python,<https://realpython.com/python-send-email/>. Accessed 24 April  2025.

@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Jen Guo and Wendy Hu">
-<meta name="dcterms.date" content="2025-04-26">
+<meta name="dcterms.date" content="2025-05-01">
 
-<title>DSAN 5500 Final Project Job Position ETL Pipeline</title>
+<title>DSAN 5500 Final Project Job Position Posts ETL Pipeline</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -3097,7 +3097,7 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">DSAN 5500 Final Project Job Position ETL Pipeline</h1>
+<h1 class="title">DSAN 5500 Final Project Job Position Posts ETL Pipeline</h1>
 <p class="subtitle lead">A DSAN 5500</p>
 </div>
 
@@ -3115,7 +3115,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 26, 2025</p>
+      <p class="date">May 1, 2025</p>
     </div>
   </div>
   
@@ -3129,7 +3129,7 @@ vertical-align: -.125em;
 
 <section id="set-up-api-key" class="level1">
 <h1>Set Up API Key</h1>
-<div id="09b22180" class="cell" data-execution_count="1">
+<div id="fcf47fc6" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#load needed packages</span></span>
@@ -3159,7 +3159,7 @@ vertical-align: -.125em;
 </section>
 <section id="extract-step" class="level1">
 <h1>Extract Step</h1>
-<div id="d94f2b03" class="cell" data-execution_count="2">
+<div id="97d49023" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install needed packages</span></span>
@@ -3220,7 +3220,7 @@ vertical-align: -.125em;
 <span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;app_key&#39;</span>: API_KEY,                <span class="co"># API key</span></span>
 <span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;what&#39;</span>: <span class="st">&#39;data scientist&#39;</span>,          <span class="co"># Job title or keywords</span></span>
 <span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;where&#39;</span>: <span class="st">&#39;Washington, DC&#39;</span>,         <span class="co"># Location</span></span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;results_per_page&#39;</span>: <span class="dv">1</span>,             <span class="co"># Number of results per page</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;results_per_page&#39;</span>: <span class="dv">5</span>,             <span class="co"># Number of results per page</span></span>
 <span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;sort_by&#39;</span>: <span class="st">&#39;date&#39;</span>,                 <span class="co"># Sort by most recent</span></span>
 <span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;salary_min&#39;</span>: <span class="dv">90000</span>,               <span class="co"># Minimum salary to get results for</span></span>
 <span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;full_time&#39;</span>: <span class="dv">1</span>                     <span class="co"># Only return full-time job positions</span></span>
@@ -3262,7 +3262,7 @@ vertical-align: -.125em;
 </section>
 <section id="transformation-step" class="level1">
 <h1>Transformation Step</h1>
-<div id="5b287fed" class="cell" data-execution_count="3">
+<div id="0f73778e" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to transform extract job info into a friendly email structure</span></span>
@@ -3308,7 +3308,7 @@ vertical-align: -.125em;
 </section>
 <section id="load-step" class="level1">
 <h1>Load Step</h1>
-<div id="778275d6" class="cell" data-execution_count="4">
+<div id="1905739b" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to load the extracted job posts in email format into a json file as test </span></span>
@@ -3321,29 +3321,30 @@ vertical-align: -.125em;
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        json.dump([job.model_dump(mode<span class="op">=</span><span class="st">&quot;json&quot;</span>) <span class="cf">for</span> job <span class="kw">in</span> job_list], f, indent<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="203698fd" class="cell" data-execution_count="5">
+<div id="ac834afe" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to define url to extract job posts</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># def scrape_job_draft1(</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     job_url: str = &quot;https://api.adzuna.com/v1/api/jobs/us/search/1&quot;, #extract job posts from this Adzuna url</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#     jobs_filename: str = &quot;extracted_jobs.json&quot; #load extracted data to json file with specified title</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ):</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   extracted_jobs = extract_jobs(job_url) #call the extract_jobs function</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   #add the transformatiom_extracted_jobs function step</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   email_template = transform_extracted_jobs(extracted_jobs)</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   #print out the email_friendly version of extracted jobs in email template</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#   print(email_template)</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#   #file_result = load_jobs_to_file(email_template, jobs_filename)</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#   #return(file_result) #return extracted job posts in the json file output</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#   load_jobs_to_file(email_template, jobs_filename)</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># scrape_job() #call the scrape_job function</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#first attempt draft</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to define url to extract job posts</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># def scrape_job_draft1(</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#     job_url: str = &quot;https://api.adzuna.com/v1/api/jobs/us/search/1&quot;, #extract job posts from this Adzuna url</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#     jobs_filename: str = &quot;extracted_jobs.json&quot; #load extracted data to json file with specified title</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ):</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   extracted_jobs = extract_jobs(job_url) #call the extract_jobs function</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   #add the transformatiom_extracted_jobs function step</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   email_template = transform_extracted_jobs(extracted_jobs)</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#   #print out the email_friendly version of extracted jobs in email template</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#   print(email_template)</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#   #file_result = load_jobs_to_file(email_template, jobs_filename)</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#   #return(file_result) #return extracted job posts in the json file output</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#   load_jobs_to_file(email_template, jobs_filename)</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co"># scrape_job() #call the scrape_job function</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="41ccd200" class="cell" data-execution_count="6">
+<div id="3cb1e3c9" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create function to define url to extract job posts</span></span>
@@ -3363,10 +3364,10 @@ vertical-align: -.125em;
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>scrape_job() <span class="co">#call scrape_job function</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>&quot;&lt;h2 style=&#39;font-family: Arial;&#39;&gt;Your Daily Job Digest: Data Scientist roles in Washington, DC&lt;/h2&gt;&lt;br&gt;\n        &lt;div style=&#39;font-family: Arial;&#39;&gt;             \n            &lt;p style=&#39;font-size:16px; font-weight:bold;&#39;&gt;Title 1: Director of Product Design, Growth &amp; Engagement -Remote&lt;/p&gt;  \n            &lt;p style=&#39;font-size:14px;&#39;&gt;Company: Included Health&lt;/p&gt;                    \n            &lt;p&gt;Location: Washington, Washington, D.C.&lt;/p&gt;                   \n            &lt;p&gt;Salary: Not specified&lt;/p&gt;                  \n            &lt;p&gt;&lt;strong&gt;Minimum salary: &lt;/strong&gt;131850&lt;/p&gt;          \n            &lt;p&gt;Employment type: full_time&lt;/p&gt;      \n            &lt;p&gt;Degree requirement: Unknown&lt;/p&gt;           \n            &lt;p&gt;Description summary: At Included Health, we’re on a mission to raise the standard of healthcare for everyone. We’re a new kind of healthcare company, focused on breaking down barriers to provide high-quality care for every person in every community. We offer guidance, ad&lt;/p&gt;    \n            &lt;p&gt;More info url: https://www.adzuna.com/land/ad/5164190467?se=bpfd_NMi8BGuG2jpRCZXLA&amp;utm_medium=api&amp;utm_source=1381a6ed&amp;v=483E7F80BC4C7988C6A0000DE442DE01809DEE20)&lt;/p&gt;          \n        &lt;/div&gt;\n        &quot;</code></pre>
+<pre><code>&quot;&lt;h2 style=&#39;font-family: Arial;&#39;&gt;Your Daily Job Digest: Data Scientist roles in Washington, DC&lt;/h2&gt;&lt;br&gt;\n        &lt;div style=&#39;font-family: Arial;&#39;&gt;             \n            &lt;p style=&#39;font-size:16px; font-weight:bold;&#39;&gt;Title 1: Software Engineer&lt;/p&gt;  \n            &lt;p style=&#39;font-size:14px;&#39;&gt;Company: Walmart&lt;/p&gt;                    \n            &lt;p&gt;Location: Falls Church City, Virginia&lt;/p&gt;                   \n            &lt;p&gt;Salary: Not specified&lt;/p&gt;                  \n            &lt;p&gt;&lt;strong&gt;Minimum salary: &lt;/strong&gt;139878&lt;/p&gt;          \n            &lt;p&gt;Employment type: full_time&lt;/p&gt;      \n            &lt;p&gt;Degree requirement: Unknown&lt;/p&gt;           \n            &lt;p&gt;Description summary: Position Summary What you&#39;ll do We are looking for super smart Staff Software Engineers to help build the top-tier Android products. About Team: Last Mile Delivery is expected to grow multiple times over in the next few years. In this role, you will &lt;/p&gt;    \n            &lt;p&gt;More info url: https://www.adzuna.com/details/5174369806?utm_medium=api&amp;utm_source=1381a6ed)&lt;/p&gt;          \n        &lt;/div&gt;\n        \n        &lt;div style=&#39;font-family: Arial;&#39;&gt;             \n            &lt;p style=&#39;font-size:16px; font-weight:bold;&#39;&gt;Title 2: Software Engineer&lt;/p&gt;  \n            &lt;p style=&#39;font-size:14px;&#39;&gt;Company: Walmart&lt;/p&gt;                    \n            &lt;p&gt;Location: Arlington, Arlington County&lt;/p&gt;                   \n            &lt;p&gt;Salary: Not specified&lt;/p&gt;                  \n            &lt;p&gt;&lt;strong&gt;Minimum salary: &lt;/strong&gt;143613&lt;/p&gt;          \n            &lt;p&gt;Employment type: full_time&lt;/p&gt;      \n            &lt;p&gt;Degree requirement: Unknown&lt;/p&gt;           \n            &lt;p&gt;Description summary: Position Summary What you&#39;ll do We are looking for super smart Staff Software Engineers to help build the top-tier Android products. About Team: Last Mile Delivery is expected to grow multiple times over in the next few years. In this role, you will &lt;/p&gt;    \n            &lt;p&gt;More info url: https://www.adzuna.com/details/5174362338?utm_medium=api&amp;utm_source=1381a6ed)&lt;/p&gt;          \n        &lt;/div&gt;\n        \n        &lt;div style=&#39;font-family: Arial;&#39;&gt;             \n            &lt;p style=&#39;font-size:16px; font-weight:bold;&#39;&gt;Title 3: Software Engineer&lt;/p&gt;  \n            &lt;p style=&#39;font-size:14px;&#39;&gt;Company: Walmart&lt;/p&gt;                    \n            &lt;p&gt;Location: Silver Spring, Montgomery County&lt;/p&gt;                   \n            &lt;p&gt;Salary: Not specified&lt;/p&gt;                  \n            &lt;p&gt;&lt;strong&gt;Minimum salary: &lt;/strong&gt;143197&lt;/p&gt;          \n            &lt;p&gt;Employment type: full_time&lt;/p&gt;      \n            &lt;p&gt;Degree requirement: Unknown&lt;/p&gt;           \n            &lt;p&gt;Description summary: Position Summary What you&#39;ll do We are looking for super smart Staff Software Engineers to help build the top-tier Android products. About Team: Last Mile Delivery is expected to grow multiple times over in the next few years. In this role, you will &lt;/p&gt;    \n            &lt;p&gt;More info url: https://www.adzuna.com/details/5174168971?utm_medium=api&amp;utm_source=1381a6ed)&lt;/p&gt;          \n        &lt;/div&gt;\n        \n        &lt;div style=&#39;font-family: Arial;&#39;&gt;             \n            &lt;p style=&#39;font-size:16px; font-weight:bold;&#39;&gt;Title 4: Cyber Security Splunk Lead&lt;/p&gt;  \n            &lt;p style=&#39;font-size:14px;&#39;&gt;Company: Valiant Solutions&lt;/p&gt;                    \n            &lt;p&gt;Location: Washington, D.C., US&lt;/p&gt;                   \n            &lt;p&gt;Salary: Not specified&lt;/p&gt;                  \n            &lt;p&gt;&lt;strong&gt;Minimum salary: &lt;/strong&gt;91788&lt;/p&gt;          \n            &lt;p&gt;Employment type: full_time&lt;/p&gt;      \n            &lt;p&gt;Degree requirement: Unknown&lt;/p&gt;           \n            &lt;p&gt;Description summary: Valiant Solutions is seeking a Cyber Security Splunk Lead with advanced Splunk experience to join our rapidly growing and innovative cybersecurity team in the Washington DC Metro Area. As the Cyber Security Splunk Lead of the Advanced Analysis, Resea&lt;/p&gt;    \n            &lt;p&gt;More info url: https://www.adzuna.com/details/5171539435?utm_medium=api&amp;utm_source=1381a6ed)&lt;/p&gt;          \n        &lt;/div&gt;\n        \n        &lt;div style=&#39;font-family: Arial;&#39;&gt;             \n            &lt;p style=&#39;font-size:16px; font-weight:bold;&#39;&gt;Title 5: Software Engineer&lt;/p&gt;  \n            &lt;p style=&#39;font-size:14px;&#39;&gt;Company: Government Employees Insurance Company&lt;/p&gt;                    \n            &lt;p&gt;Location: Chevy Chase, Montgomery County&lt;/p&gt;                   \n            &lt;p&gt;Salary: Not specified&lt;/p&gt;                  \n            &lt;p&gt;&lt;strong&gt;Minimum salary: &lt;/strong&gt;130000&lt;/p&gt;          \n            &lt;p&gt;Employment type: full_time&lt;/p&gt;      \n            &lt;p&gt;Degree requirement: Unknown&lt;/p&gt;           \n            &lt;p&gt;Description summary: Summary GEICO AI platform and Infrastructure team is looking for a seasoned Software Engineer responsible for designing, building, and maintaining Machine Learning platform to support data science modelling initiatives. This responsibility is excitin&lt;/p&gt;    \n            &lt;p&gt;More info url: https://www.adzuna.com/details/5169709337?utm_medium=api&amp;utm_source=1381a6ed)&lt;/p&gt;          \n        &lt;/div&gt;\n        &quot;</code></pre>
 </div>
 </div>
-<div id="7bda20ea" class="cell" data-execution_count="7">
+<div id="ea38d03e" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import packages to sent out email</span></span>
@@ -3402,7 +3403,7 @@ vertical-align: -.125em;
 <span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;Failed to send email: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="030f6975" class="cell" data-execution_count="8">
+<div id="f6fb5507" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
@@ -3414,7 +3415,7 @@ vertical-align: -.125em;
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#print(&quot;App password loaded:&quot;, app_password)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="032d1007" class="cell" data-execution_count="9">
+<div id="a5476f2b" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#extract job post from Adzuna site</span></span>

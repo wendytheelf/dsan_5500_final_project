@@ -1,5 +1,5 @@
 ---
-title: DSAN 5500 Final Project Job Position ETL Pipeline
+title: DSAN 5500 Final Project Job Position Posts ETL Pipeline
 subtitle: A DSAN 5500
 author: Jen Guo and Wendy Hu
 date: last-modified
@@ -108,7 +108,7 @@ params = {
     'app_key': API_KEY,                # API key
     'what': 'data scientist',          # Job title or keywords
     'where': 'Washington, DC',         # Location
-    'results_per_page': 1,             # Number of results per page
+    'results_per_page': 5,             # Number of results per page
     'sort_by': 'date',                 # Sort by most recent
     'salary_min': 90000,               # Minimum salary to get results for
     'full_time': 1                     # Only return full-time job positions
@@ -207,6 +207,7 @@ def load_jobs_as_json(job_list: List[GetJobs], filepath: str):
 ```
 
 ```{python}
+#first attempt draft
 #create function to define url to extract job posts
 # def scrape_job_draft1(
 #     job_url: str = "https://api.adzuna.com/v1/api/jobs/us/search/1", #extract job posts from this Adzuna url
